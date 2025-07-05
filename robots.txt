@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://raffayuda.dev/sitemap.xml
+
+# Disallow private files
+Disallow: /assets/private/
+Disallow: /.git/
+Disallow: /node_modules/
+Disallow: /.env
+
+# Allow social media crawlers
+User-agent: facebookexternalhit/*
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Crawl-delay for general bots
+Crawl-delay: 1
