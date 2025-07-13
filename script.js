@@ -1,3 +1,41 @@
+// Enhanced navbar functionality
+function initNavbar() {
+    const navbar = document.querySelector('nav');
+    const progressBar = document.getElementById('progressBar');
+    const scrollIndicator = document.getElementById('scrollIndicator');
+    
+    // Update progress bar and scroll indicator
+    function updateScrollProgress() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const progress = (scrollTop / scrollHeight) * 100;
+        
+        // Update progress bar
+        if (progressBar) {
+            progressBar.style.width = progress + '%';
+        }
+        
+        // Update scroll indicator
+        if (scrollIndicator) {
+            const indicatorProgress = (scrollTop / scrollHeight) * 80;
+            scrollIndicator.style.transform = `translateY(${indicatorProgress}px)`;
+        }
+        
+        // Add shadow to navbar when scrolled
+        if (scrollTop > 50) {
+            navbar.classList.add('navbar-shadow');
+        } else {
+            navbar.classList.remove('navbar-shadow');
+        }
+    }
+    
+    // Update scroll progress on scroll
+    window.addEventListener('scroll', updateScrollProgress);
+    
+    // Initial call
+    updateScrollProgress();
+}
+
 // Typing Animation
 const texts = [
     "Junior Web Developer",
@@ -38,6 +76,7 @@ function typeWriter() {
 // Start typing animation when page loads
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(typeWriter, 1000);
+    initNavbar(); // Initialize navbar enhancements
 });
 
 // Smooth scrolling for navigation links
@@ -274,26 +313,6 @@ document.addEventListener('keydown', function(e) {
         }
     } else {
         konamiIndex = 0;
-    }
-});
-
-// Add theme toggle functionality
-const themeToggle = document.createElement('button');
-themeToggle.className = 'fixed bottom-6 right-6 w-12 h-12 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-colors z-40';
-themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-document.body.appendChild(themeToggle);
-
-let isDarkMode = false;
-
-themeToggle.addEventListener('click', function() {
-    isDarkMode = !isDarkMode;
-    
-    if (isDarkMode) {
-        document.body.classList.add('dark');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-        document.body.classList.remove('dark');
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
     }
 });
 

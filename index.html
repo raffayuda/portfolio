@@ -80,44 +80,231 @@
             border-radius: 2px;
             transition: width 1s ease-in-out;
         }
+        
+        /* Enhanced navbar styles */
+        .navbar-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Progress bar for reading progress */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+        
+        /* Navbar active state animations */
+        .nav-item {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .nav-item:hover::before {
+            left: 100%;
+        }
+        
+        /* Glassmorphism effect for navbar */
+        .glass-navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Ripple effect for buttons */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+        
+        .ripple:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Navbar logo animation */
+        .logo-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .logo-hover:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        /* Navbar sticky effect */
+        .navbar-sticky {
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .navbar-sticky.show {
+            transform: translateY(0);
+        }
+        
+        /* Smooth scrolling indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 4px;
+            height: 200px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 2px;
+            z-index: 1000;
+        }
+        
+        .scroll-indicator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 2px;
+            transition: transform 0.3s ease;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+    
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md shadow-sm z-50" x-data="{ open: false }">
+    <nav class="fixed top-0 w-full bg-gradient-to-r from-white/95 via-white/90 to-white/95 backdrop-blur-lg shadow-lg border-b border-white/20 z-50 transition-all duration-300" x-data="{ open: false, activeSection: 'home' }" :class="{ 'py-2': scrolled, 'py-4': !scrolled }" @scroll.window="
+        scrolled = window.scrollY > 50;
+        // Update active section based on scroll position
+        const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+        const scrollPos = window.scrollY + 100;
+        sections.forEach(section => {
+            const element = document.getElementById(section);
+            if (element) {
+                const offsetTop = element.offsetTop;
+                const offsetBottom = offsetTop + element.offsetHeight;
+                if (scrollPos >= offsetTop && scrollPos < offsetBottom) {
+                    activeSection = section;
+                }
+            }
+        });
+    ">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
-                <div class="text-2xl font-bold text-gray-800">
-                    <span class="text-purple-600">R</span>affa
+                <!-- Logo with gradient and icon -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center shadow-lg logo-hover">
+                        <i class="fas fa-code text-white text-sm"></i>
+                    </div>
+                    <div class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                        Raffa<span class="text-gray-800">Dev</span>
+                    </div>
                 </div>
                 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-8">
-                    <a href="#home" class="text-gray-700 hover:text-purple-600 transition-colors">Home</a>
-                    <a href="#about" class="text-gray-700 hover:text-purple-600 transition-colors">About</a>
-                    <a href="#skills" class="text-gray-700 hover:text-purple-600 transition-colors">Skills</a>
-                    <a href="#projects" class="text-gray-700 hover:text-purple-600 transition-colors">Projects</a>
-                    <a href="#contact" class="text-gray-700 hover:text-purple-600 transition-colors">Contact</a>
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#home" class="nav-item ripple relative px-4 py-2 text-gray-700 hover:text-purple-600 transition-all duration-300 rounded-full hover:bg-purple-50 group" :class="{ 'text-purple-600 bg-purple-50': activeSection === 'home' }">
+                        <i class="fas fa-home mr-2 text-sm"></i>Home
+                        <span class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 transform transition-transform duration-300 rounded-full" :class="activeSection === 'home' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
+                    </a>
+                    <a href="#about" class="nav-item ripple relative px-4 py-2 text-gray-700 hover:text-purple-600 transition-all duration-300 rounded-full hover:bg-purple-50 group" :class="{ 'text-purple-600 bg-purple-50': activeSection === 'about' }">
+                        <i class="fas fa-user mr-2 text-sm"></i>About
+                        <span class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 transform transition-transform duration-300 rounded-full" :class="activeSection === 'about' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
+                    </a>
+                    <a href="#skills" class="nav-item ripple relative px-4 py-2 text-gray-700 hover:text-purple-600 transition-all duration-300 rounded-full hover:bg-purple-50 group" :class="{ 'text-purple-600 bg-purple-50': activeSection === 'skills' }">
+                        <i class="fas fa-cog mr-2 text-sm"></i>Skills
+                        <span class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 transform transition-transform duration-300 rounded-full" :class="activeSection === 'skills' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
+                    </a>
+                    <a href="#projects" class="nav-item ripple relative px-4 py-2 text-gray-700 hover:text-purple-600 transition-all duration-300 rounded-full hover:bg-purple-50 group" :class="{ 'text-purple-600 bg-purple-50': activeSection === 'projects' }">
+                        <i class="fas fa-folder mr-2 text-sm"></i>Projects
+                        <span class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 transform transition-transform duration-300 rounded-full" :class="activeSection === 'projects' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
+                    </a>
+                    <a href="#contact" class="nav-item ripple relative px-4 py-2 text-gray-700 hover:text-purple-600 transition-all duration-300 rounded-full hover:bg-purple-50 group" :class="{ 'text-purple-600 bg-purple-50': activeSection === 'contact' }">
+                        <i class="fas fa-envelope mr-2 text-sm"></i>Contact
+                        <span class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 transform transition-transform duration-300 rounded-full" :class="activeSection === 'contact' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"></span>
+                    </a>
                 </div>
 
-                <!-- Mobile Menu Button -->
-                <button @click="open = !open" class="md:hidden">
-                    <i class="fas fa-bars text-gray-700"></i>
-                </button>
+                <!-- Actions & Mobile Menu Button -->
+                <div class="flex items-center space-x-3">
+                    <!-- Download CV Button (Desktop) -->
+                    <a href="CV_Raffa Yuda Pratama.pdf" download="CV_Raffa Yuda Pratama.pdf" class="hidden lg:flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-download mr-2 text-sm"></i>
+                        <span class="text-sm font-medium">CV</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button @click="open = !open" class="md:hidden w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110">
+                        <i :class="open ? 'fas fa-times' : 'fas fa-bars'" class="text-purple-600 transition-all duration-300"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Mobile Menu -->
-        <div x-show="open" class="md:hidden bg-white border-t">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="#home" class="block px-3 py-2 text-gray-700 hover:text-purple-600">Home</a>
-                <a href="#about" class="block px-3 py-2 text-gray-700 hover:text-purple-600">About</a>
-                <a href="#skills" class="block px-3 py-2 text-gray-700 hover:text-purple-600">Skills</a>
-                <a href="#projects" class="block px-3 py-2 text-gray-700 hover:text-purple-600">Projects</a>
-                <a href="#contact" class="block px-3 py-2 text-gray-700 hover:text-purple-600">Contact</a>
+        <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-2" class="md:hidden bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-lg border-t border-white/20">
+            <div class="px-4 pt-2 pb-4 space-y-2">
+                <a href="#home" @click="open = false" class="flex items-center px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 rounded-lg transition-all duration-300" :class="{ 'text-purple-600 bg-gradient-to-r from-purple-50 to-blue-50': activeSection === 'home' }">
+                    <i class="fas fa-home mr-3 text-purple-600"></i>Home
+                </a>
+                <a href="#about" @click="open = false" class="flex items-center px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 rounded-lg transition-all duration-300" :class="{ 'text-purple-600 bg-gradient-to-r from-purple-50 to-blue-50': activeSection === 'about' }">
+                    <i class="fas fa-user mr-3 text-purple-600"></i>About
+                </a>
+                <a href="#skills" @click="open = false" class="flex items-center px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 rounded-lg transition-all duration-300" :class="{ 'text-purple-600 bg-gradient-to-r from-purple-50 to-blue-50': activeSection === 'skills' }">
+                    <i class="fas fa-cog mr-3 text-purple-600"></i>Skills
+                </a>
+                <a href="#projects" @click="open = false" class="flex items-center px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 rounded-lg transition-all duration-300" :class="{ 'text-purple-600 bg-gradient-to-r from-purple-50 to-blue-50': activeSection === 'projects' }">
+                    <i class="fas fa-folder mr-3 text-purple-600"></i>Projects
+                </a>
+                <a href="#contact" @click="open = false" class="flex items-center px-4 py-3 text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 rounded-lg transition-all duration-300" :class="{ 'text-purple-600 bg-gradient-to-r from-purple-50 to-blue-50': activeSection === 'contact' }">
+                    <i class="fas fa-envelope mr-3 text-purple-600"></i>Contact
+                </a>
+                
+                <!-- Mobile Actions -->
+                <div class="pt-2 border-t border-gray-200 space-y-2">
+                    <a href="#" download="CV_Raffa Yuda Pratama.pdf" class="flex items-center justify-center w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300">
+                        <i class="fas fa-download mr-2"></i>Download CV
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
+    
+    <!-- Breadcrumb Navigation -->
+    <div class="fixed top-16 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/50 py-2 hidden md:block" x-data="{ currentSection: 'home' }" x-show="scrolled">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center space-x-2 text-sm">
+                <i class="fas fa-home text-purple-600"></i>
+                <span class="text-gray-500">/</span>
+                <span class="text-purple-600 font-medium" x-text="currentSection.charAt(0).toUpperCase() + currentSection.slice(1)"></span>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section id="home" class="min-h-screen flex items-center gradient-bg">
@@ -177,7 +364,7 @@
                     
                     <div class="grid grid-cols-2 gap-4 mt-8">
                         <div class="text-center p-4 bg-gray-50 rounded-lg">
-                            <div class="text-3xl font-bold text-purple-600">10+</div>
+                            <div class="text-3xl font-bold text-purple-600">5+</div>
                             <div class="text-gray-600">Projects</div>
                         </div>
                         <div class="text-center p-4 bg-gray-50 rounded-lg">
@@ -223,149 +410,98 @@
                 <div class="w-24 h-1 bg-purple-600 mx-auto"></div>
             </div>
             
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Frontend -->
-                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
-                    <div class="text-center mb-6">
-                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div class="bg-white rounded-xl p-8 shadow-lg max-w-4xl mx-auto">
+                <!-- 5 Skills Utama -->
+                <div class="grid grid-cols-5 gap-6 mb-8" id="mainSkills">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-html5 text-2xl text-orange-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">HTML5</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-css3-alt text-2xl text-blue-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">CSS3</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-js-square text-2xl text-yellow-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">JavaScript</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-react text-2xl text-cyan-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">React</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i class="fas fa-code text-2xl text-purple-600"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-800">Frontend</h3>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">HTML5</span>
-                                <span class="text-sm text-gray-500">90%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[90%]"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">CSS3</span>
-                                <span class="text-sm text-gray-500">85%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[85%]"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">JavaScript</span>
-                                <span class="text-sm text-gray-500">80%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[80%]"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">Tailwind CSS</span>
-                                <span class="text-sm text-gray-500">88%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[88%]"></div>
-                            </div>
-                        </div>
+                        <span class="text-sm font-medium text-gray-700">Tailwind</span>
                     </div>
                 </div>
-
-                <!-- Frameworks -->
-                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
-                    <div class="text-center mb-6">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-layer-group text-2xl text-green-600"></i>
+                
+                <!-- Skills Tambahan (Hidden) -->
+                <div class="grid grid-cols-4 gap-6 mb-8 hidden" id="allSkillsList">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-vuejs text-2xl text-green-600"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-800">Frameworks</h3>
+                        <span class="text-sm font-medium text-gray-700">Vue.js</span>
                     </div>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">React</span>
-                                <span class="text-sm text-gray-500">75%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[75%]"></div>
-                            </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-layer-group text-2xl text-gray-600"></i>
                         </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">Vue.js</span>
-                                <span class="text-sm text-gray-500">70%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[70%]"></div>
-                            </div>
+                        <span class="text-sm font-medium text-gray-700">Next.js</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-bootstrap text-2xl text-purple-600"></i>
                         </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">Next.js</span>
-                                <span class="text-sm text-gray-500">65%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[65%]"></div>
-                            </div>
+                        <span class="text-sm font-medium text-gray-700">Bootstrap</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-git-alt text-2xl text-red-600"></i>
                         </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">Bootstrap</span>
-                                <span class="text-sm text-gray-500">82%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[82%]"></div>
-                            </div>
+                        <span class="text-sm font-medium text-gray-700">Git</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-code text-2xl text-blue-600"></i>
                         </div>
+                        <span class="text-sm font-medium text-gray-700">VS Code</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-figma text-2xl text-pink-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Figma</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-file-word text-2xl text-blue-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">MS Office</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fab fa-laravel text-2xl text-red-600"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Laravel</span>
                     </div>
                 </div>
-
-                <!-- Tools -->
-                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
-                    <div class="text-center mb-6">
-                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-tools text-2xl text-blue-600"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">Tools</h3>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">Git</span>
-                                <span class="text-sm text-gray-500">85%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[85%]"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">VS Code</span>
-                                <span class="text-sm text-gray-500">90%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[90%]"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">Figma</span>
-                                <span class="text-sm text-gray-500">75%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[75%]"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium text-gray-600">Microsoft Office</span>
-                                <span class="text-sm text-gray-500">60%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar w-[60%]"></div>
-                            </div>
-                        </div>
-                    </div>
+                
+                <!-- Button Lihat Semua -->
+                <div class="text-center">
+                    <button id="showAllSkillsBtn" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                        Lihat Semua
+                    </button>
                 </div>
             </div>
         </div>
@@ -498,20 +634,7 @@
                         </div>
                     </div>
                     
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 text-white rounded-full flex items-center justify-center hover:bg-gray-900 transition-colors">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-blue-400 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-pink-500 text-white rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </div>
+                    
                 </div>
                   <form class="space-y-6" x-data="contactForm()" @submit.prevent="submitForm">
                     <div>
@@ -566,9 +689,28 @@
                 © 2025 Raffa Yuda Pratama. All rights reserved.
             </p>
         </div>
-    </footer>    <script src="data.js"></script>
+    </footer>    
+    <script src="data.js"></script>
     <script src="config.js"></script>
     <script src="utils.js"></script>
     <script src="script.js"></script>
+    <script>
+    // Accordion/expand logic for skills
+    document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('showAllSkillsBtn');
+        var list = document.getElementById('allSkillsList');
+        var expanded = false;
+        btn.addEventListener('click', function() {
+            expanded = !expanded;
+            if (expanded) {
+                list.classList.remove('hidden');
+                btn.textContent = 'Tutup';
+            } else {
+                list.classList.add('hidden');
+                btn.textContent = 'Lihat Semua';
+            }
+        });
+    });
+    </script>
 </body>
 </html>
